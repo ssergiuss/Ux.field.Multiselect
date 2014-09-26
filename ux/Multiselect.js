@@ -68,7 +68,7 @@ Ext.define('Ux.field.Multiselect', {
         }
 
         return Ext.factory(config, 'Ext.Button', this.getClearButton());
-    },    
+    },
 
     /**
      * @private
@@ -111,9 +111,9 @@ Ext.define('Ux.field.Multiselect', {
                 config = this.getClearButton();
 
                 if(config) {
-                    toolbar.add(config);   
+                    toolbar.add(config);
                 }
-                toolbar.add(this.getDoneButton());    
+                toolbar.add(this.getDoneButton());
             }
         }
         return me.listPanel;
@@ -140,7 +140,7 @@ Ext.define('Ux.field.Multiselect', {
         this.listPanel.down('list').deselectAll();
         this.setValue(null);
         this.superclass.onListTap.call(this);
-    },    
+    },
     /**
      * @private
      */
@@ -154,7 +154,7 @@ Ext.define('Ux.field.Multiselect', {
     updateValue: function(newValue, oldValue) {
         var me = this,
             value = me.convertValue(newValue,me.getValueField(),me.getDisplayField());
-            
+
       value = value.join(me.getDelimiter());
       me.superclass.superclass.updateValue.call(me,[value]);
     },
@@ -200,7 +200,7 @@ Ext.define('Ux.field.Multiselect', {
             } else if (!Ext.isArray(value)) {
                 value = [value];
             }
-        
+
             for (len = value.length; i < len; ++i) {
                 item = value[i];
                 if (item && item.isModel) {
@@ -227,12 +227,12 @@ Ext.define('Ux.field.Multiselect', {
         if(value){
             for (valueLen = value.length; i < valueLen; ++i) {
                 for (j = 0; j < allLen; ++j) {
-                    rec = all[j];   
+                    rec = all[j];
                     if (rec.get(valueField) == value[i]) {
                         records.push(rec);
                         break;
                     }
-                }   
+                }
             }
         }
         return records;
