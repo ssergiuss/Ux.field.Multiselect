@@ -4,12 +4,10 @@ Ext.define('Ux.field.Multiselect', {
 
     config: {
         delimiter: ',',
-
         mode: 'MULTI',
-
         doneButton: true,
-
-        clearButton: false
+        clearButton: false,
+        maxSelection: null
     },
     /**
      * Updates the {@link #doneButton} configuration. Will change it into a button when appropriate, or just update the text if needed.
@@ -74,8 +72,8 @@ Ext.define('Ux.field.Multiselect', {
      * @private
      */
     getTabletPicker: function() {
-        var me = this,
-            config = me.getDefaultTabletPickerConfig(),
+        var me       = this,
+            config   = me.getDefaultTabletPickerConfig(),
             listMode = me.getMode(),
             toolbar;
 
@@ -93,8 +91,13 @@ Ext.define('Ux.field.Multiselect', {
                     xtype: 'list',
                     mode: listMode,
                     store: me.getStore(),
-                    itemTpl: '<span class="x-list-label">{' + me.getDisplayField() + ':htmlEncode}</span>'
-                },{
+                    itemTpl: '<span class="x-list-label">{' + me.getDisplayField() + ':htmlEncode}</span>',
+                    listeners: [{
+                        event: 'itemtap',
+                        fn: 'onListTap',
+                        scope: me
+                    }]
+                }, {
                     xtype: 'toolbar',
                     docked: 'bottom',
                     layout: {
@@ -104,27 +107,48 @@ Ext.define('Ux.field.Multiselect', {
                 }]
             }, config));
 
-            if(listMode === 'SINGLE'){
-                me.listPanel.down('list').on('itemtap',me.onListTap,me);
-            }else{
+            if (listMode !== 'SINGLE') {
                 toolbar = me.listPanel.down('toolbar');
                 config = this.getClearButton();
 
-                if(config) {
+                if (config) {
                     toolbar.add(config);
                 }
+
                 toolbar.add(this.getDoneButton());
             }
         }
+
         return me.listPanel;
     },
+
     /**
      * @private
      */
-    onListTap : function(list,index,target,record) {
-        this.setValue(record);
-        this.callParent();
+    onListTap: function(list, index, target, record) {
+        var me             = this,
+            listMode       = me.getMode(),
+            selectionCount = me.getSelectionCount(),
+            maxSelection   = this.getMaxSelection();
+
+        switch (listMode) {
+            case 'SINGLE':
+                this.setValue(record);
+                this.callParent(arguments);
+                break;
+            case 'MULTI':
+                if (false !== maxSelection
+                    && false === list.isSelected(index)
+                    && selectionCount >= maxSelection
+                ) {
+                    return false;
+                }
+                break;
+            default:
+                this.callParent(arguments);
+        }
     },
+
     /**
      * @private
      */
@@ -237,13 +261,32 @@ Ext.define('Ux.field.Multiselect', {
         }
         return records;
     },
+
     /**
-     * Returns the current selected {@link Ext.data.Model records} instances selected in this field.
+     * Returns the list containing select options.
+     * @return {Ext.dataview.List} The list containing select options.
+     */
+    getList: function() {
+        return this.listPanel.down('list');
+    },
+
+    /**
+     * Returns the current selected {@link Ext.data.Model records} instances
+     * selected in this field.
      * @return {Ext.data.Model[]} An array of Records.
      */
     getSelection: function() {
-        return this.listPanel.down('list').getSelection();
+        return this.getList().getSelection();
     },
+
+    /**
+     * Returns the number of selections.
+     * @return {Number} The number of selections.
+     */
+    getSelectionCount: function() {
+        return this.getList().getSelectionCount();
+    },
+
     /**
      * Returns the current selected records as an array of their valueFields.
      * @return {Array} An array of valueFields
