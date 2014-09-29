@@ -69,57 +69,118 @@ Ext.define('Ux.field.Multiselect', {
     },
 
     /**
+     * Get tablet picker.
      * @private
+     * @return {Ext.Panel} The list panel.
      */
     getTabletPicker: function() {
-        var me       = this,
-            config   = me.getDefaultTabletPickerConfig(),
-            listMode = me.getMode(),
-            toolbar;
+        var me     = this,
+            config = me.getDefaultTabletPickerConfig();
 
         if (!me.listPanel) {
             me.listPanel = Ext.create('Ext.Panel', Ext.apply({
-                left: 0,
-                top: 0,
-                modal: true,
-                cls: Ext.baseCSSPrefix + 'select-overlay',
-                layout: 'fit',
+                left         : 0,
+                top          : 0,
+                modal        : true,
+                cls          : Ext.baseCSSPrefix + 'select-overlay',
+                layout       : 'fit',
                 hideOnMaskTap: true,
-                width: Ext.os.is.Phone ? '14em' : '18em',
-                height: (Ext.os.is.BlackBerry && Ext.os.version.getMajor() === 10) ? '12em' : (Ext.os.is.Phone ? '12.5em' : '22em'),
-                items: [{
-                    xtype: 'list',
-                    mode: listMode,
-                    store: me.getStore(),
-                    itemTpl: '<span class="x-list-label">{' + me.getDisplayField() + ':htmlEncode}</span>',
-                    listeners: [{
-                        event: 'itemtap',
-                        fn: 'onListTap',
-                        scope: me
-                    }]
-                }, {
-                    xtype: 'toolbar',
-                    docked: 'bottom',
-                    layout: {
-                        pack: 'center',
-                        type: 'hbox'
-                    }
-                }]
+                width        : Ext.os.is.Phone ? '14em' : '18em',
+                height       : (Ext.os.is.BlackBerry && Ext.os.version.getMajor() === 10)? '12em' : (Ext.os.is.Phone ? '12.5em' : '22em'),
+                items        : me.buildListPanelItems()
             }, config));
-
-            if (listMode !== 'SINGLE') {
-                toolbar = me.listPanel.down('toolbar');
-                config = this.getClearButton();
-
-                if (config) {
-                    toolbar.add(config);
-                }
-
-                toolbar.add(this.getDoneButton());
-            }
         }
 
         return me.listPanel;
+    },
+
+    /**
+     * Builds the list panel items.
+     * @private
+     * @return {Array} The list panel items.
+     */
+    buildListPanelItems: function() {
+        var me             = this,
+            listPanelItems = [];
+
+        if (null !== me.getMaxSelection()) {
+            listPanelItems.push(me.buildTopToolbar());
+        }
+
+        listPanelItems.push(me.buildList());
+
+        if ('MULTI' === me.getMode()) {
+            listPanelItems.push(me.buildBottomToolbar());
+        }
+
+        return listPanelItems;
+    },
+
+    /**
+     * Builds the top toolbar.
+     * @private
+     * @return {Ext.Toolbar} The top toolbar.
+     */
+    buildTopToolbar: function() {
+        var me = this;
+
+        return Ext.create('Ext.Toolbar', {
+            itemId: 'topToolbar',
+            docked: 'top',
+            title: {
+                title: 'You must select maximum ' + me.getMaxSelection() + ' items',
+                style: 'font-size: 14px;'
+            },
+            layout: {
+                pack: 'center',
+                type: 'hbox'
+            }
+        });
+    },
+
+    /**
+     * Builds the list containing select options.
+     * @private
+     * @return {Ext.dataview.List} The list.
+     */
+    buildList: function() {
+        var me = this;
+
+        return Ext.create('Ext.dataview.List', {
+            mode: me.getMode(),
+            store: me.getStore(),
+            itemTpl: '<span class="x-list-label">{' + me.getDisplayField() + ':htmlEncode}</span>',
+            listeners: [{
+                event: 'itemtap',
+                fn: 'onListTap',
+                scope: me
+            }]
+        });
+    },
+
+    /**
+     * Builds the bottom toolbar.
+     * @private
+     * @return {Ext.toolbar} The bottom toolbar.
+     */
+    buildBottomToolbar: function() {
+        var bottomToolbar = Ext.create('Ext.Toolbar', {
+            itemId: 'bottomToolbar',
+            docked: 'bottom',
+            layout: {
+                pack: 'center',
+                type: 'hbox'
+            }
+        });
+
+        clearButton = this.getClearButton();
+        if (clearButton) {
+            bottomToolbar.add(clearButton);
+        }
+
+        bottomToolbar.add(this.getDoneButton());
+
+        return bottomToolbar;
     },
 
     /**
@@ -263,11 +324,27 @@ Ext.define('Ux.field.Multiselect', {
     },
 
     /**
+     * Returns the top toolbar.
+     * @return {Ext.Toolbar} The top toolbar.
+     */
+    getTopToolbar: function() {
+        return this.listPanel.down('#topToolbar');
+    },
+
+    /**
      * Returns the list containing select options.
      * @return {Ext.dataview.List} The list containing select options.
      */
     getList: function() {
         return this.listPanel.down('list');
+    },
+
+    /**
+     * Returns the bottom toolbar.
+     * @return {Ext.Toolbar} The bottom toolbar.
+     */
+    getBottomToolbar: function() {
+        return this.listPanel.down('#bottomToolbar');
     },
 
     /**
