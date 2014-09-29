@@ -1,7 +1,6 @@
 Ext.define('Ux.field.Multiselect', {
     extend: 'Ext.field.Select',
     alias : 'widget.multiselectfield',
-
     config: {
         delimiter: ',',
         mode: 'MULTI',
@@ -9,10 +8,12 @@ Ext.define('Ux.field.Multiselect', {
         clearButton: false,
         maxSelection: null
     },
+
     /**
-     * Updates the {@link #doneButton} configuration. Will change it into a button when appropriate, or just update the text if needed.
-     * @param {Object} config
-     * @return {Object}
+     * Updates the {@link #doneButton} configuration. Will change it into a
+     *     button when appropriate, or just update the text if needed.
+     * @param  {Object} config
+     * @return {Object} The button.
      */
     applyDoneButton: function(config) {
         if (config) {
@@ -41,6 +42,12 @@ Ext.define('Ux.field.Multiselect', {
         return Ext.factory(config, 'Ext.Button', this.getDoneButton());
     },
 
+    /**
+     * Updates the {@link #clearButton} configuration. Will change it into a
+     *     button when appropriate, or just update the text if needed.
+     * @param  {Object} config
+     * @return {Object}
+     */
     applyClearButton: function(config) {
         if (config) {
             if (Ext.isBoolean(config)) {
@@ -184,6 +191,7 @@ Ext.define('Ux.field.Multiselect', {
     },
 
     /**
+     * Handles onListTap event.
      * @private
      */
     onListTap: function(list, index, target, record) {
@@ -211,6 +219,7 @@ Ext.define('Ux.field.Multiselect', {
     },
 
     /**
+     * Handles onDoneButtonTap event.
      * @private
      */
     onDoneButtonTap: function(){
@@ -218,7 +227,9 @@ Ext.define('Ux.field.Multiselect', {
         this.setValue(records);
         this.superclass.onListTap.call(this);
     },
+
     /**
+     * Handles onClearButtonTap event.
      * @private
      */
     onClearButtonTap: function(){
@@ -226,14 +237,18 @@ Ext.define('Ux.field.Multiselect', {
         this.setValue(null);
         this.superclass.onListTap.call(this);
     },
+
     /**
+     * Applies value.
      * @private
      */
     applyValue: function(value) {
         this.getOptions();
-        return  this.getValueFromRecords(value,this.getValueField());
+        return this.getValueFromRecords(value,this.getValueField());
     },
+
     /**
+     * Updates value.
      * @private
      */
     updateValue: function(newValue, oldValue) {
@@ -243,7 +258,9 @@ Ext.define('Ux.field.Multiselect', {
       value = value.join(me.getDelimiter());
       me.superclass.superclass.updateValue.call(me,[value]);
     },
+
     /**
+     * Converts value.
      * @private
      */
     convertValue: function(value,fieldIn,fieldOut){
@@ -268,9 +285,10 @@ Ext.define('Ux.field.Multiselect', {
         }
         return out;
     },
+
     /**
+     * Returns the value in array form from records.
      * @private
-     * Returns the value in array form from records
      */
     getValueFromRecords: function(value){
         var delimiter = this.getDelimiter(),
@@ -296,7 +314,9 @@ Ext.define('Ux.field.Multiselect', {
         }
         return out.length > 0 ? out : value;
     },
+
     /**
+     * Returns records from value.
      * @private
      */
     getRecordsFromValue: function(value){
@@ -371,7 +391,9 @@ Ext.define('Ux.field.Multiselect', {
     getValue: function() {
         return this._value;
     },
+
     /**
+     * Handles onChange event.
      * @private
      */
     onChange: function(component, newValue, oldValue) {
@@ -380,8 +402,10 @@ Ext.define('Ux.field.Multiselect', {
 
         me.fireEvent('change', me, me.getValue(), old);
     },
+
     /**
-     * Shows the picker for the select field, whether that is a {@link Ext.picker.Picker} or a simple
+     * Shows the picker for the select field, whether that is a
+     * {@link Ext.picker.Picker} or a simple.
      * {@link Ext.List list}.
      */
     showPicker: function() {
@@ -417,6 +441,7 @@ Ext.define('Ux.field.Multiselect', {
 
         listPanel.showBy(me.getComponent(), (Ext.os.is.BlackBerry && Ext.os.version.getMajor() === 10) ? 't-b' : null);
     },
+
     /**
      * Called when the internal {@link #store}'s data has changed.
      */
