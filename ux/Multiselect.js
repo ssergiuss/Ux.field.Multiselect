@@ -222,6 +222,17 @@ Ext.define('Ux.field.Multiselect', {
 
                 break;
             case 'MULTI':
+                if (1 === minSelection
+                    && 1 === maxSelection
+                ) {
+                    if (false === list.isSelected(index)) {
+                        list.deselectAll();
+                        list.select(index);
+                    }
+
+                    return false;
+                }
+
                 if (false !== maxSelection
                     && false === list.isSelected(index)
                     && selectionCount >= maxSelection
@@ -230,6 +241,7 @@ Ext.define('Ux.field.Multiselect', {
                 }
 
                 if (false !== minSelection
+                    && false === maxSelection
                     && true === list.isSelected(index)
                     && selectionCount <= minSelection
                 ) {
