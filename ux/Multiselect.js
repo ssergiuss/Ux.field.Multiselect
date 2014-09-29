@@ -6,7 +6,7 @@ Ext.define('Ux.field.Multiselect', {
         mode: 'MULTI',
         doneButton: true,
         clearButton: false,
-        maxSelection: null
+        maxSelection: false
     },
 
     /**
@@ -110,7 +110,7 @@ Ext.define('Ux.field.Multiselect', {
         var me             = this,
             listPanelItems = [];
 
-        if (null !== me.getMaxSelection()) {
+        if (false !== me.getMaxSelection()) {
             listPanelItems.push(me.buildTopToolbar());
         }
 
