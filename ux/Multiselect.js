@@ -2,10 +2,11 @@ Ext.define('Ux.field.Multiselect', {
     extend: 'Ext.field.Select',
     alias : 'widget.multiselectfield',
     config: {
-        delimiter: ',',
-        mode: 'MULTI',
-        doneButton: true,
-        clearButton: false,
+        delimiter   : ',',
+        mode        : 'MULTI',
+        doneButton  : true,
+        clearButton : false,
+        minSelection: false,
         maxSelection: false
     },
 
@@ -110,7 +111,7 @@ Ext.define('Ux.field.Multiselect', {
         var me             = this,
             listPanelItems = [];
 
-        if (false !== me.getMaxSelection()) {
+        if (false !== me.getMinSelection() || false !== me.getMaxSelection()) {
             listPanelItems.push(me.buildTopToolbar());
         }
 
@@ -129,14 +130,27 @@ Ext.define('Ux.field.Multiselect', {
      * @return {Ext.Toolbar} The top toolbar.
      */
     buildTopToolbar: function() {
-        var me = this;
+        var me = this,
+            title = '',
+            minSelection = me.getMinSelection(),
+            maxSelection = me.getMaxSelection();
+
+        if (false !== minSelection) {
+            title += 'You must select minimum ' + minSelection;
+        }
+
+        if (false !== maxSelection) {
+            title += (0 === title.length ? 'You must select' : '<br>and') + ' maximum ' + maxSelection;
+        }
+
+        title += ' item(s).';
 
         return Ext.create('Ext.Toolbar', {
             itemId: 'topToolbar',
             docked: 'top',
             title: {
-                title: 'You must select maximum ' + me.getMaxSelection() + ' items',
-                style: 'font-size: 14px;'
+                title: title,
+                style: 'font-size: 14px; line-height: 18px;',
             },
             layout: {
                 pack: 'center',
@@ -198,12 +212,14 @@ Ext.define('Ux.field.Multiselect', {
         var me             = this,
             listMode       = me.getMode(),
             selectionCount = me.getSelectionCount(),
+            minSelection   = me.getMinSelection(),
             maxSelection   = this.getMaxSelection();
 
         switch (listMode) {
             case 'SINGLE':
                 this.setValue(record);
                 this.callParent(arguments);
+
                 break;
             case 'MULTI':
                 if (false !== maxSelection
@@ -212,6 +228,14 @@ Ext.define('Ux.field.Multiselect', {
                 ) {
                     return false;
                 }
+
+                if (false !== minSelection
+                    && true === list.isSelected(index)
+                    && selectionCount <= minSelection
+                ) {
+                    return false;
+                }
+
                 break;
             default:
                 this.callParent(arguments);
