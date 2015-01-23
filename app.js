@@ -24,7 +24,8 @@ Ext.application({
     name: 'MultiselectFieldDemo',
 
     requires: [
-        'Ux.field.Multiselect'
+        'Ux.field.Multiselect',
+        'Ux.field.Multimultiselect'
     ],
 
     launch: function() {
@@ -37,16 +38,37 @@ Ext.application({
                     title: 'Select',
                     items: [
                         {
-                            xtype: 'multiselectfield',
+                            xtype: 'multimultiselectfield',
                             label: 'Choose one',
-                            delimiter: ',', 
-                            mode: 'MULTI', // default is MULTI,
+                            delimiter: ', ',
+                            placeHolder: 'Multimultiselect',
+                            //mode: 'MULTI', // default is MULTI,
                             // value: ['first','second'] , init value with an array
                             // value: 'first,second', init value with a string
-                            options: [
-                                {text: 'First Option',  value: 'first'},
-                                {text: 'Second Option', value: 'second'},
-                                {text: 'Third Option',  value: 'third'}
+                            //options: [
+                                //{text: 'First Option',  value: 'first'},
+                                //{text: 'Second Option', value: 'second'},
+                                //{text: 'Third Option',  value: 'third'}
+                            //]
+                            multiselects: [
+                                {
+                                    label: 'Multiselect1',
+                                    maxSelection: 2,
+                                    options: [
+                                        {text: 'First Option1',  value: 'first'},
+                                        {text: 'Second Option1', value: 'second'},
+                                        {text: 'Third Option1',  value: 'third'}
+                                    ]
+                                },
+                                {
+                                    label: 'Multiselect2',
+                                    minSelection: 1,
+                                    maxSelection: 1,
+                                    options: [
+                                        {text: 'First Option2',  value: 'first'},
+                                        {text: 'Second Option2', value: 'second'}
+                                    ]
+                                }
                             ]
                         }
                     ]
